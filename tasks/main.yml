@@ -1,0 +1,31 @@
+---
+# tasks file for bvansomeren.supervisord
+
+- name: ensure supervisor is installed
+  package: name={{ item }} state=present
+  with_items: "{{ supervisord_packages }}"
+
+- name: ensure supervisor is configured
+  ini_file: dest={{ supervisord_configuration_file }}
+            section={{ item.section }}
+            option={{ item.option }}
+            value={{ item.value }}
+            backup=yes
+  with_items: "{{ supervisord_config }}"
+  notify: reload supervisor
+
+- name: ensure supervisor subprocess configuration file exists
+  command: touch {{ supervisord_configuration_folder }}/{{ supervisord_subprocess_name }}.ini creates={{ supervisord_configuration_folder }}/{{ supervisord_subprocess_name }}.ini
+  when: supervisord_subprocess_name is defined
+
+- name: ensure supervisor subprocess configuration file contents
+  ini_file:     dest={{ supervisord_configuration_folder }}/{{ supervisord_subprocess_name }}.ini
+                section="{{ supervisord_subprocess_type }}:{{ supervisord_subprocess_name }}"
+                option={{ item.option }}
+                value={{ item.value }}
+  with_items: "{{ supervisord_subprocess_options }}"
+  notify: reload supervisor
+  when: supervisord_subprocess_name is defined
+
+- name: ensure supervisor is enabled and started
+  service: name=supervisord state=started enabled=yes

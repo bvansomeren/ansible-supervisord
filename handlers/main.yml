@@ -1,0 +1,5 @@
+---
+# handlers file for bvansomeren.supervisord
+
+- name: reload supervisor
+  command: supervisorctl reread

@@ -1,0 +1,12 @@
+---
+# defaults file for bvansomeren.supervisord
+
+supervisord_packages: 
+  - supervisor
+
+supervisord_configuration_file: "/etc/supervisord.conf"
+supervisord_configuration_folder: "/etc/supervisord.d/"
+
+supervisord_config: []
+
+supervisord_subprocess_type: "program"
